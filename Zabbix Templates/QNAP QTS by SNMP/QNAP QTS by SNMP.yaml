@@ -1,7 +1,7 @@
 zabbix_export:
-  version: '7.4'
+  version: '7.0'
   template_groups:
-    - uuid: 5e177452ac0d49d587dba98c4649bcec
+    - uuid: 7df96b18c230490a9a0a9e2307226338
       name: 'Templates/NAS & SAN'
   templates:
     - uuid: 2dfda7019a464f74b73754a6b40ef133
@@ -16,6 +16,7 @@ zabbix_export:
         ENTITY-MIB
         HOST-RESOURCES-MIB
         QNAP NAS-MIB
+        QTS-MIB (1.3.6.1.4.1.55062.1.10, SSD cache acceleration)
         
         Main QNAP NAS-MIB OIDs use the 1.3.6.1.4.1.24681 macro.
         Default value is 1.3.6.1.4.1.24681.
@@ -23,7 +24,7 @@ zabbix_export:
         name: E-MSN
         version: 7.4-10
       groups:
-        - name: 'Templates/NAS & SAN'
+        - name: Templates
       items:
         - uuid: 8a74e6258bca469ea92b25b369343717
           name: 'ICMP ping'
@@ -170,6 +171,7 @@ zabbix_export:
           snmp_oid: 1.3.6.1.2.1.1.1.0
           key: qnap.system.descr
           value_type: TEXT
+          trends: '0'
           description: 'SNMP system description.'
           tags:
             - tag: Application
@@ -193,6 +195,7 @@ zabbix_export:
           key: qnap.system.entity.descr
           delay: 1h
           value_type: TEXT
+          trends: '0'
           inventory_link: HARDWARE
           preprocessing:
             - type: JAVASCRIPT
@@ -208,6 +211,7 @@ zabbix_export:
           key: qnap.system.entity.model
           delay: 1h
           value_type: TEXT
+          trends: '0'
           preprocessing:
             - type: JAVASCRIPT
               parameters:
@@ -222,6 +226,7 @@ zabbix_export:
           key: qnap.system.entity.name
           delay: 1h
           value_type: TEXT
+          trends: '0'
           preprocessing:
             - type: JAVASCRIPT
               parameters:
@@ -236,6 +241,7 @@ zabbix_export:
           key: qnap.system.firmware
           delay: 1h
           value_type: TEXT
+          trends: '0'
           inventory_link: SOFTWARE
           preprocessing:
             - type: JAVASCRIPT
@@ -263,6 +269,7 @@ zabbix_export:
           key: qnap.system.hardware.version
           delay: 1h
           value_type: TEXT
+          trends: '0'
           preprocessing:
             - type: JAVASCRIPT
               parameters:
@@ -276,6 +283,7 @@ zabbix_export:
           snmp_oid: 1.3.6.1.4.1.24681.1.3.13.0
           key: qnap.system.hostname
           value_type: TEXT
+          trends: '0'
           description: 'QNAP hostname.'
           tags:
             - tag: Application
@@ -289,6 +297,7 @@ zabbix_export:
           key: qnap.system.manufacturer
           delay: 1h
           value_type: TEXT
+          trends: '0'
           inventory_link: VENDOR
           preprocessing:
             - type: JAVASCRIPT
@@ -369,6 +378,7 @@ zabbix_export:
           snmp_oid: 1.3.6.1.4.1.24681.1.3.12.0
           key: qnap.system.model
           value_type: TEXT
+          trends: '0'
           description: 'QNAP model name.'
           inventory_link: MODEL
           tags:
@@ -382,6 +392,7 @@ zabbix_export:
           snmp_oid: 1.3.6.1.2.1.1.5.0
           key: qnap.system.name
           value_type: TEXT
+          trends: '0'
           description: 'SNMP system name.'
           tags:
             - tag: Application
@@ -395,6 +406,7 @@ zabbix_export:
           key: qnap.system.serial
           delay: 1h
           value_type: TEXT
+          trends: '0'
           inventory_link: SERIALNO_A
           preprocessing:
             - type: JAVASCRIPT
@@ -410,6 +422,7 @@ zabbix_export:
           key: qnap.system.software.version
           delay: 1h
           value_type: TEXT
+          trends: '0'
           preprocessing:
             - type: JAVASCRIPT
               parameters:
@@ -539,6 +552,8 @@ zabbix_export:
               description: 'The rate of inbound packets discarded even though no errors were detected.'
               preprocessing:
                 - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
               tags:
                 - tag: Application
                   value: Network
@@ -554,6 +569,8 @@ zabbix_export:
               description: 'The rate of inbound packets that could not be delivered due to errors.'
               preprocessing:
                 - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
               tags:
                 - tag: Application
                   value: Network
@@ -582,6 +599,8 @@ zabbix_export:
               description: 'The rate of outbound packets discarded even though no errors were detected.'
               preprocessing:
                 - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
               tags:
                 - tag: Application
                   value: Network
@@ -597,6 +616,8 @@ zabbix_export:
               description: 'The rate of outbound packets that could not be transmitted due to errors.'
               preprocessing:
                 - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
               tags:
                 - tag: Application
                   value: Network
@@ -612,6 +633,8 @@ zabbix_export:
               description: 'The total number of octets received on the interface.'
               preprocessing:
                 - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
                 - type: MULTIPLIER
                   parameters:
                     - '8'
@@ -630,6 +653,8 @@ zabbix_export:
               description: 'The total number of octets transmitted out of the interface.'
               preprocessing:
                 - type: CHANGE_PER_SECOND
+                  parameters:
+                    - ''
                 - type: MULTIPLIER
                   parameters:
                     - '8'
@@ -693,6 +718,182 @@ zabbix_export:
                   item:
                     host: 'QNAP QTS by SNMP'
                     key: 'ifMIB.ifMIBObjects.ifTable.ifEntry.ifOutDiscards.[{#IFNAME}]'
+        - uuid: 8119090a36e143efb1e9e14d584ca2db
+          name: 'QNAP SSD Cache Discovery'
+          type: SNMP_AGENT
+          snmp_oid: 'discovery[{#QNAP_VOL_SSDCACHE},1.3.6.1.4.1.24681.1.4.1.1.1.2.3.2.1.6]'
+          key: qnap.cache.discovery
+          delay: 1h
+          lifetime: 30d
+          enabled_lifetime_type: DISABLE_NEVER
+          description: |
+            Discovers the SSD cache when at least one volume has SSD cache acceleration enabled (NAS-MIB volumeSSDCache = 1).
+            Cache metrics are QTS-MIB scalars (1.3.6.1.4.1.55062.1.10.11-17). They answer to GET but are not returned by an SNMP walk, so they cannot be discovered directly.
+          item_prototypes:
+            - uuid: 195234ee67a2417aad15c4d0548ccb69
+              name: 'SSD cache: Available space'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.55062.1.10.11.{#QNAP_CACHE_INDEX}'
+              key: 'qnap.cache.available[{#QNAP_CACHE_INDEX}]'
+              units: '%'
+              description: 'QTS-MIB cacheAvailablePercent. A full read cache is normal behaviour.'
+              tags:
+                - tag: Application
+                  value: 'QNAP Storage'
+                - tag: Application
+                  value: 'SSD Cache'
+              trigger_prototypes:
+                - uuid: 427513b393e246f9bde8a59a92b79547
+                  expression: 'last(/QNAP QTS by SNMP/qnap.cache.available[{#QNAP_CACHE_INDEX}])<{$CACHE.AVAIL.WARN}'
+                  name: 'SSD cache: available space is low'
+                  opdata: 'Available: {ITEM.LASTVALUE1}'
+                  status: DISABLED
+                  discover: NO_DISCOVER
+                  priority: WARNING
+                  description: 'Disabled by default: an SSD cache that fills up is expected. Enable it for write-only or read-write caches if you want to be warned.'
+                  tags:
+                    - tag: scope
+                      value: capacity
+            - uuid: 753c72576e1a4b3288a7143cc8eadb83
+              name: 'SSD cache: Mode'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.55062.1.10.17.{#QNAP_CACHE_INDEX}'
+              key: 'qnap.cache.mode[{#QNAP_CACHE_INDEX}]'
+              delay: 1h
+              value_type: CHAR
+              trends: '0'
+              description: 'QTS-MIB cacheMode: Random I/O or All I/O.'
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'return String(value).trim();'
+              tags:
+                - tag: Application
+                  value: 'QNAP Storage'
+                - tag: Application
+                  value: 'SSD Cache'
+            - uuid: e6e781abbbe04512a158afbab2136812
+              name: 'SSD cache: RAID type'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.55062.1.10.16.{#QNAP_CACHE_INDEX}'
+              key: 'qnap.cache.raid_type[{#QNAP_CACHE_INDEX}]'
+              delay: 1h
+              value_type: CHAR
+              trends: '0'
+              description: 'QTS-MIB cacheRAIDType: Single, RAID 0, RAID 1, RAID 5...'
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'return String(value).trim();'
+              tags:
+                - tag: Application
+                  value: 'QNAP Storage'
+                - tag: Application
+                  value: 'SSD Cache'
+            - uuid: 699a3a8df3f34937a85934728d6acf0b
+              name: 'SSD cache: Read hit rate'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.55062.1.10.12.{#QNAP_CACHE_INDEX}'
+              key: 'qnap.cache.read_hit[{#QNAP_CACHE_INDEX}]'
+              units: '%'
+              description: 'QTS-MIB cacheReadHitRate.'
+              tags:
+                - tag: Application
+                  value: 'QNAP Storage'
+                - tag: Application
+                  value: 'SSD Cache'
+            - uuid: 7dbbd87dbfe446f5a8e1f45862da50d7
+              name: 'SSD cache: Status'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.55062.1.10.14.{#QNAP_CACHE_INDEX}'
+              key: 'qnap.cache.status[{#QNAP_CACHE_INDEX}]'
+              delay: 5m
+              value_type: CHAR
+              trends: '0'
+              description: 'QTS-MIB cacheStatus.'
+              preprocessing:
+                - type: JAVASCRIPT
+                  parameters:
+                    - 'return String(value).trim();'
+              tags:
+                - tag: Application
+                  value: 'QNAP Storage'
+                - tag: Application
+                  value: 'SSD Cache'
+                - tag: Application
+                  value: 'System Health'
+              trigger_prototypes:
+                - uuid: ac5f3ded59674df3aac88ff1fba946ff
+                  expression: 'find(/QNAP QTS by SNMP/qnap.cache.status[{#QNAP_CACHE_INDEX}],#1,"regexp","^Ready$")=0'
+                  name: 'SSD cache: status reports an issue'
+                  opdata: 'Status: {ITEM.LASTVALUE1}'
+                  priority: HIGH
+                  tags:
+                    - tag: scope
+                      value: storage
+            - uuid: 74cd5eb4747a4ec1a24d0a6189840907
+              name: 'SSD cache: Type'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.55062.1.10.15.{#QNAP_CACHE_INDEX}'
+              key: 'qnap.cache.type[{#QNAP_CACHE_INDEX}]'
+              delay: 1h
+              description: 'QTS-MIB cacheType: 0 = Read-Only, 1 = Read-Write, 2 = Write-Only.'
+              valuemap:
+                name: 'QNAP Cache Type'
+              tags:
+                - tag: Application
+                  value: 'QNAP Storage'
+                - tag: Application
+                  value: 'SSD Cache'
+              trigger_prototypes:
+                - uuid: 8c6f84822ce14cee8d2759b8b68da0b9
+                  expression: 'last(/QNAP QTS by SNMP/qnap.cache.type[{#QNAP_CACHE_INDEX}],#1)<>last(/QNAP QTS by SNMP/qnap.cache.type[{#QNAP_CACHE_INDEX}],#2)'
+                  name: 'SSD cache: type has changed'
+                  opdata: 'Current: {ITEM.LASTVALUE1}'
+                  priority: INFO
+                  description: 'The SSD cache type (Read-Only, Read-Write, Write-Only) has changed. Acknowledge to close the problem manually.'
+                  manual_close: 'YES'
+                  tags:
+                    - tag: scope
+                      value: notice
+            - uuid: 2a735b6eccf54e539d9724e9e51a3644
+              name: 'SSD cache: Write hit rate'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.55062.1.10.13.{#QNAP_CACHE_INDEX}'
+              key: 'qnap.cache.write_hit[{#QNAP_CACHE_INDEX}]'
+              units: '%'
+              description: 'QTS-MIB cacheWriteHitRate.'
+              tags:
+                - tag: Application
+                  value: 'QNAP Storage'
+                - tag: Application
+                  value: 'SSD Cache'
+          graph_prototypes:
+            - uuid: ddb505636ba64bea8fa5202151bc6c70
+              name: 'SSD cache: Hit rate'
+              ymin_type_1: FIXED
+              ymax_type_1: FIXED
+              graph_items:
+                - color: 2E7D32
+                  item:
+                    host: 'QNAP QTS by SNMP'
+                    key: 'qnap.cache.read_hit[{#QNAP_CACHE_INDEX}]'
+                - sortorder: '1'
+                  color: 2774A4
+                  item:
+                    host: 'QNAP QTS by SNMP'
+                    key: 'qnap.cache.write_hit[{#QNAP_CACHE_INDEX}]'
+          preprocessing:
+            - type: JAVASCRIPT
+              parameters:
+                - |
+                  var rows = JSON.parse(value);
+                  for (var i = 0; i < rows.length; i++) {
+                      if (String(rows[i]["{#QNAP_VOL_SSDCACHE}"]).trim() === "1") {
+                          return JSON.stringify([{"{#QNAP_CACHE_INDEX}": "0"}]);
+                      }
+                  }
+                  return JSON.stringify([]);
         - uuid: 1780905d23fe4574b0803b6178257671
           name: 'QNAP CPU Discovery'
           type: SNMP_AGENT
@@ -707,6 +908,7 @@ zabbix_export:
               key: 'qnap.cpu.description[{#SNMPINDEX}]'
               delay: 1h
               value_type: CHAR
+              trends: '0'
               tags:
                 - tag: Application
                   value: CPU
@@ -788,6 +990,7 @@ zabbix_export:
             conditions:
               - macro: '{#QNAP_DISK_LOCATION}'
                 value: '^[1-9][0-9]*$'
+                formulaid: A
           lifetime: 30d
           enabled_lifetime_type: DISABLE_NEVER
           description: 'Uses QNAP Storage Manager disk information.'
@@ -818,6 +1021,7 @@ zabbix_export:
               key: 'qnap.external.disk.model[{#QNAP_DISK_INDEX}]'
               delay: 15m
               value_type: TEXT
+              trends: '0'
               tags:
                 - tag: Application
                   value: Disks
@@ -870,6 +1074,7 @@ zabbix_export:
               key: 'qnap.fan.name[{#QNAP_FAN_INDEX}]'
               delay: 15m
               value_type: TEXT
+              trends: '0'
               tags:
                 - tag: Application
                   value: Fans
@@ -928,6 +1133,7 @@ zabbix_export:
             conditions:
               - macro: '{#HR_STORAGE_DESCR}'
                 value: '^(Physical memory|Virtual memory|Memory buffers|Cached memory|Shared memory|Swap space|Available memory)$'
+                formulaid: A
           lifetime: 30d
           enabled_lifetime_type: DISABLE_NEVER
           item_prototypes:
@@ -1004,6 +1210,7 @@ zabbix_export:
             conditions:
               - macro: '{#QNAP_DISK_LOCATION}'
                 value: ^0$
+                formulaid: A
           lifetime: 30d
           enabled_lifetime_type: DISABLE_NEVER
           description: 'Uses QNAP Storage Manager disk information.'
@@ -1062,6 +1269,7 @@ zabbix_export:
               key: 'qnap.internal.disk.model[{#QNAP_DISK_INDEX}]'
               delay: 1h
               value_type: TEXT
+              trends: '0'
               tags:
                 - tag: Application
                   value: Disks
@@ -1234,6 +1442,7 @@ zabbix_export:
               key: 'qnap.lun.status[{#QNAP_LUN_INDEX}]'
               delay: 5m
               value_type: TEXT
+              trends: '0'
               description: 'iSCSI LUN status.'
               tags:
                 - tag: Application
@@ -1425,6 +1634,7 @@ zabbix_export:
               key: 'qnap.raid.level[{#QNAP_RAID_INDEX}]'
               delay: 1h
               value_type: TEXT
+              trends: '0'
               description: 'RAID level.'
               tags:
                 - tag: Application
@@ -1438,6 +1648,7 @@ zabbix_export:
               key: 'qnap.raid.status[{#QNAP_RAID_INDEX}]'
               delay: 5m
               value_type: TEXT
+              trends: '0'
               description: 'RAID group status.'
               tags:
                 - tag: Application
@@ -1459,6 +1670,7 @@ zabbix_export:
             conditions:
               - macro: '{#QNAP_VOL_INDEX}'
                 value: .+
+                formulaid: A
           lifetime: 30d
           enabled_lifetime_type: DISABLE_NEVER
           description: 'Uses QNAP Storage Manager volume table.'
@@ -1492,9 +1704,33 @@ zabbix_export:
               key: 'qnap.volume.name[{#QNAP_VOL_INDEX}]'
               delay: 1h
               value_type: TEXT
+              trends: '0'
               tags:
                 - tag: Application
                   value: Volumes
+            - uuid: e903cc0b6c594fd2a20af5fcc915c2d6
+              name: 'Volume {#QNAP_VOL_INDEX} ({#QNAP_VOL_NAME}): SSD cache acceleration'
+              type: SNMP_AGENT
+              snmp_oid: '1.3.6.1.4.1.24681.1.4.1.1.1.2.3.2.1.6.{#SNMPINDEX}'
+              key: 'qnap.volume.ssdcache[{#QNAP_VOL_INDEX}]'
+              delay: 1h
+              description: 'NAS-MIB volumeSSDCache: whether SSD cache acceleration is enabled on the volume.'
+              valuemap:
+                name: 'QNAP Volume SSD Cache'
+              tags:
+                - tag: Application
+                  value: Volumes
+              trigger_prototypes:
+                - uuid: c3a0f94a2f7541b6a0d9de00109762e9
+                  expression: 'last(/QNAP QTS by SNMP/qnap.volume.ssdcache[{#QNAP_VOL_INDEX}],#1)<>last(/QNAP QTS by SNMP/qnap.volume.ssdcache[{#QNAP_VOL_INDEX}],#2)'
+                  name: 'Volume {#QNAP_VOL_INDEX}: SSD cache acceleration state has changed'
+                  opdata: 'Current: {ITEM.LASTVALUE1}'
+                  priority: WARNING
+                  description: 'SSD cache acceleration was enabled or disabled on this volume. If this was not intentional, check the cache in Storage & Snapshots. Acknowledge to close the problem manually.'
+                  manual_close: 'YES'
+                  tags:
+                    - tag: scope
+                      value: storage
             - uuid: 988ab8520b454e5db0b1cfdf9519aec2
               name: 'Volume {#QNAP_VOL_INDEX} ({#QNAP_VOL_NAME}): Status'
               type: SNMP_AGENT
@@ -1502,6 +1738,7 @@ zabbix_export:
               key: 'qnap.volume.status[{#QNAP_VOL_INDEX}]'
               delay: 5m
               value_type: TEXT
+              trends: '0'
               tags:
                 - tag: Application
                   value: Volumes
@@ -1596,6 +1833,9 @@ zabbix_export:
         - tag: target
           value: qts
       macros:
+        - macro: '{$CACHE.AVAIL.WARN}'
+          value: '10'
+          description: 'SSD cache available space warning threshold, in %. Used by a trigger that is disabled by default.'
         - macro: '{$CPU.TEMP.AVG}'
           value: '75'
         - macro: '{$CPU.TEMP.HIGH}'
@@ -2374,6 +2614,82 @@ zabbix_export:
                     - type: INTEGER
                       name: righty
                       value: '0'
+                - type: honeycomb
+                  name: 'SSD Cache Available'
+                  'y': '13'
+                  width: '18'
+                  height: '5'
+                  fields:
+                    - type: STRING
+                      name: items.0
+                      value: 'SSD cache: Available space'
+                    - type: STRING
+                      name: primary_label
+                      value: 'SSD cache'
+                    - type: STRING
+                      name: reference
+                      value: SCAVL
+                    - type: STRING
+                      name: thresholds.0.color
+                      value: FFA000
+                    - type: STRING
+                      name: thresholds.0.threshold
+                      value: '0'
+                    - type: STRING
+                      name: thresholds.1.color
+                      value: 069C56
+                    - type: STRING
+                      name: thresholds.1.threshold
+                      value: '10'
+                - type: svggraph
+                  name: 'SSD Cache Hit Rate'
+                  x: '18'
+                  'y': '13'
+                  width: '54'
+                  height: '5'
+                  fields:
+                    - type: INTEGER
+                      name: ds.0.approximation
+                      value: '7'
+                    - type: STRING
+                      name: ds.0.color
+                      value: 2E7D32
+                    - type: STRING
+                      name: ds.0.items.0
+                      value: 'SSD cache: Read hit rate'
+                    - type: INTEGER
+                      name: ds.0.width
+                      value: '2'
+                    - type: INTEGER
+                      name: ds.1.approximation
+                      value: '7'
+                    - type: STRING
+                      name: ds.1.color
+                      value: 2774A4
+                    - type: STRING
+                      name: ds.1.items.0
+                      value: 'SSD cache: Write hit rate'
+                    - type: INTEGER
+                      name: ds.1.width
+                      value: '2'
+                    - type: STRING
+                      name: lefty_max
+                      value: '100'
+                    - type: STRING
+                      name: lefty_min
+                      value: '0'
+                    - type: INTEGER
+                      name: legend_lines
+                      value: '2'
+                    - type: INTEGER
+                      name: legend_statistic
+                      value: '1'
+                    - type: STRING
+                      name: reference
+                      value: SCHIT
+                    - type: INTEGER
+                      name: righty
+                      value: '0'
             - name: Network
               widgets:
                 - type: honeycomb
@@ -2475,6 +2791,15 @@ zabbix_export:
               newvalue: Invalid
             - value: '-9'
               newvalue: 'R/W error'
+        - uuid: fecba0b19d0f464ea40f986dd96a920c
+          name: 'QNAP Cache Type'
+          mappings:
+            - value: '0'
+              newvalue: Read-Only
+            - value: '1'
+              newvalue: Read-Write
+            - value: '2'
+              newvalue: Write-Only
         - uuid: 4d3b75f46c3446168d5a0895292111e9
           name: 'QNAP Disk Health State'
           mappings:
@@ -2502,6 +2827,15 @@ zabbix_export:
               newvalue: 'Not ready'
             - value: '-3'
               newvalue: Error
+        - uuid: 9f595a5e02bd490aa3e1fa75b3e9c744
+          name: 'QNAP Volume SSD Cache'
+          mappings:
+            - value: '-1'
+              newvalue: 'Not applicable'
+            - value: '0'
+              newvalue: Disabled
+            - value: '1'
+              newvalue: Enabled
         - uuid: 8735166af33044c1b9a01a4922041702
           name: 'Service state'
           mappings:
